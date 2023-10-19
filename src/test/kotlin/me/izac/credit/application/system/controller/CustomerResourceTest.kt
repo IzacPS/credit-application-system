@@ -45,10 +45,6 @@ class CustomerResourceTest {
   @AfterEach
   fun tearDown() = customerRepository.deleteAll()
 
-  @Test
-  fun `should except on wrong input from CreditDTO`(){
-
-  }
 
   @Test
   fun `should create a customer and return 201 status`() {
@@ -72,6 +68,24 @@ class CustomerResourceTest {
       .andExpect(MockMvcResultMatchers.jsonPath("$.street").value("Rua da Cami, 123"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
       .andDo(MockMvcResultHandlers.print())
+  }
+
+  @Test
+  fun `should except on wrong input from CustomerDTO`(){
+    //given
+    val customerStr = "{ \"firstName\": \"izaias\", \"lastName\": \"santos\", \"cpf\": \"cpf\", \"income\": 0, " +
+            "\"email\": \"email\", \"password\": \"secret\", \"zipCode\": \"123456\", \"street\": \"street\" }"
+    //when
+    //then
+    mockMvc.perform(
+      MockMvcRequestBuilders.post(URL)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(customerStr)
+    )
+      .andExpect(MockMvcResultMatchers.status().isBadRequest)
+      .andExpect(MockMvcResultMatchers.jsonPath("$.details.cpf").isNotEmpty)
+      .andExpect(MockMvcResultMatchers.jsonPath("$.details.email").isNotEmpty)
+      .andDo(MockMvcResultHandlers.print()).andReturn()
   }
 
   @Test
@@ -161,7 +175,7 @@ class CustomerResourceTest {
       .andExpect(MockMvcResultMatchers.jsonPath("$.status").value(400))
       .andExpect(
         MockMvcResultMatchers.jsonPath("$.exception")
-          .value("class me.dio.credit.application.system.exception.BusinessException")
+          .value("class me.izac.credit.application.system.exception.BusinessException")
       )
       .andExpect(MockMvcResultMatchers.jsonPath("$.details[*]").isNotEmpty)
       .andDo(MockMvcResultHandlers.print())
@@ -197,7 +211,7 @@ class CustomerResourceTest {
       .andExpect(MockMvcResultMatchers.jsonPath("$.status").value(400))
       .andExpect(
         MockMvcResultMatchers.jsonPath("$.exception")
-          .value("class me.dio.credit.application.system.exception.BusinessException")
+          .value("class me.izac.credit.application.system.exception.BusinessException")
       )
       .andExpect(MockMvcResultMatchers.jsonPath("$.details[*]").isNotEmpty)
       .andDo(MockMvcResultHandlers.print())
@@ -247,7 +261,7 @@ class CustomerResourceTest {
       .andExpect(MockMvcResultMatchers.jsonPath("$.status").value(400))
       .andExpect(
         MockMvcResultMatchers.jsonPath("$.exception")
-          .value("class me.dio.credit.application.system.exception.BusinessException")
+          .value("class me.izac.credit.application.system.exception.BusinessException")
       )
       .andExpect(MockMvcResultMatchers.jsonPath("$.details[*]").isNotEmpty)
       .andDo(MockMvcResultHandlers.print())

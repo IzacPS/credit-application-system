@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
@@ -73,6 +74,24 @@ class CreditResourceTest {
         )
             .andExpect(MockMvcResultMatchers.status().isCreated)
             .andDo(MockMvcResultHandlers.print())
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    fun `should except on wrong input from CreditDTO`(){
+        val creditStr = "{\"creditValue\":0,\"dayFirstOfInstallment\":\"2023-10-18\",\"numberOfInstallments\":0,\"customerId\":1}"
+
+        //when
+        //then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post(URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(creditStr)
+        )
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.details.numberOfInstallments").isNotEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.details.dayFirstOfInstallment").isNotEmpty)
+            .andDo(MockMvcResultHandlers.print()).andReturn()
     }
 
     @Test
@@ -166,4 +185,5 @@ class CreditResourceTest {
         dayFirstOfInstallment = dayFirstOfInstallment,
         numberOfInstallments = numberOfInstallments,
         customerId = customerId)
+
 }
